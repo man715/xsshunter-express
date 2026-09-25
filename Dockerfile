@@ -1,18 +1,18 @@
-FROM node:12
+FROM node:18
 
 # Set up directory for the server
 RUN mkdir /app/
 WORKDIR /app/
 
 # Copy front-end over
-COPY front-end/ /app/front-end/
+COPY front-end/package.json front-end/package-lock.json /app/front-end/
 WORKDIR /app/front-end/
-RUN npm install
+RUN npm ci --legacy-peer-deps
+COPY front-end/ /app/front-end/
 RUN npm run-script build
 
 WORKDIR /app/
-COPY package.json /app/
-COPY package-lock.json /app/
+COPY package.json package-lock.json /app/
 RUN npm install
 
 COPY server.js /app/
