@@ -1,15 +1,18 @@
-FROM node:18
+FROM node:18-bookworm-slim
 
 # Set up directory for the server
 RUN mkdir /app/
 WORKDIR /app/
 
-# Copy front-end over
-COPY front-end/package.json front-end/package-lock.json /app/front-end/
-WORKDIR /app/front-end/
-RUN npm ci --legacy-peer-deps
+# Front-end: use pre-built dist when present (recommended on low-RAM servers).
 COPY front-end/ /app/front-end/
-RUN npm run-script build
+WORKDIR /app/front-end/
+RUN if [ -f dist/index.html ]; then \
+      echo "Using pre-built front-end/dist, skipping npm install and build"; \
+    else \
+      npm ci --legacy-peer-deps && \
+      NODE_OPTIONS=--max-old-space-size=1536 npm run-script build; \
+    fi
 
 WORKDIR /app/
 COPY package.json package-lock.json /app/

@@ -2,6 +2,8 @@ const webpack = require('webpack');
 
 module.exports = {
   lintOnSave: false,
+  productionSourceMap: false,
+  parallel: false,
   configureWebpack: {
     // Set up all the aliases we use in our app.
     resolve: {
